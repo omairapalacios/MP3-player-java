@@ -5,17 +5,21 @@
 package com.mycompany.mp3musicplayer;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
 
 /**
  *
@@ -57,9 +61,37 @@ public class MusicPlayerGUI extends JFrame {
         //add toolbar
         addToolbar();
 
+        //load record image
         JLabel songImage = new JLabel(loadImage("record.png"));
         songImage.setBounds(0, 50, getWidth() - 20, 225);
         add(songImage);
+
+        //song title
+        JLabel songTitle = new JLabel("Song Title");
+        songTitle.setBounds(0, 285, getWidth() - 20, 30);
+        songTitle.setFont(new Font("Dialog", Font.BOLD, 24));
+        songTitle.setForeground(TEXT_COLOR);
+        songTitle.setHorizontalAlignment(SwingConstants.CENTER);
+        add(songTitle);
+
+        //song artist
+        JLabel songArtist = new JLabel("Artist");
+        songArtist.setBounds(0, 320, getWidth() - 20, 30);
+        songArtist.setFont(new Font("Dialog", Font.PLAIN, 24));
+        songArtist.setForeground(TEXT_COLOR);
+        songArtist.setHorizontalAlignment(SwingConstants.CENTER);
+        add(songArtist);
+
+        //play slider
+        JSlider playbackSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
+        playbackSlider.setBounds(getWidth() / 2 - 300 / 2, 365, 300, 40);
+        playbackSlider.setBackground(null);
+        add(playbackSlider);
+
+        //playback buttons (i.e previous, play, next)
+        addPlaybackBtns();
+        
+
     }
 
     private void addToolbar() {
@@ -91,6 +123,41 @@ public class MusicPlayerGUI extends JFrame {
         playListMenu.add(loadPlayList);
 
         add(toolBar);
+
+    }
+
+    private void addPlaybackBtns() {
+        JPanel playbackBtns = new JPanel();
+        playbackBtns.setBounds(0, 435, getWidth(), 80);
+        playbackBtns.setBackground(null);
+
+        //previous button
+        JButton prevButton = new JButton(loadImage("previous.png"));
+        prevButton.setBorderPainted(false);
+        prevButton.setBackground(null);
+        playbackBtns.add(prevButton);
+        
+        //play  button
+        JButton playButton = new JButton(loadImage("play.png"));
+        playButton.setBorderPainted(false);
+        playButton.setBackground(null);
+        playbackBtns.add(playButton);
+        
+        //pause button
+        JButton pauseButton = new JButton(loadImage("pause.png"));
+        pauseButton.setBorderPainted(false);
+        pauseButton.setBackground(null);
+        pauseButton.setVisible(false);
+        playbackBtns.add(pauseButton);
+        
+        
+        //next button
+        JButton nextButton = new JButton(loadImage("next.png"));
+        nextButton.setBorderPainted(false);
+        nextButton.setBackground(null);
+        playbackBtns.add(nextButton);
+
+         add(playbackBtns);
 
     }
 
