@@ -27,11 +27,4 @@
             <version>2.0.1</version>
         </dependency>
     </dependencies>
-    <build>
-        <resources>
-            <resource>
-                <directory>resources</directory>
-            </resource>
-        </resources> 
-    </build>
 </project>
