@@ -1,13 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.mp3musicplayer;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.FieldKey;
@@ -24,40 +17,42 @@ public class Song {
     private String songLength;
     private String filePath;
 
-    public Song(String resourceName) {
+    public Song(String filePath) {
         try {
-            // Cargar el archivo desde resources como stream
-            InputStream input = getClass().getClassLoader().getResourceAsStream(resourceName);
-            if (input == null) {
-                System.out.println("Archivo no encontrado en recursos: " + resourceName);
+            File file = new File(filePath);
+            if (!file.exists()) {
+                System.out.println("Archivo no encontrado: " + filePath);
                 songTitle = "N/A";
                 songArtist = "N/A";
                 return;
             }
 
-            // Crear archivo temporal para que jaudiotagger pueda leerlo
-            File tempFile = File.createTempFile("song-", ".mp3");
-            tempFile.deleteOnExit();
-            try (FileOutputStream out = new FileOutputStream(tempFile)) {
-                byte[] buffer = new byte[1024];
-                int length;
-                while ((length = input.read(buffer)) > 0) {
-                    out.write(buffer, 0, length);
-                }
-            }
-
-            // Leer metadatos con jaudiotagger
-            AudioFile audioFile = AudioFileIO.read(tempFile);
+            // Leer metadatos con jaudiotagger directamente
+            AudioFile audioFile = AudioFileIO.read(file);
             Tag tag = audioFile.getTag();
+
             if (tag != null) {
                 songTitle = tag.getFirst(FieldKey.TITLE);
                 songArtist = tag.getFirst(FieldKey.ARTIST);
+
+                // Si están vacíos, usar el nombre del archivo como fallback
+                if (songTitle == null || songTitle.isEmpty()) {
+                    songTitle = file.getName();
+                }
+                if (songArtist == null || songArtist.isEmpty()) {
+                    songArtist = "Desconocido";
+                }
+
             } else {
-                songTitle = "N/A";
-                songArtist = "N/A";
+                songTitle = file.getName();
+                songArtist = "Desconocido";
             }
 
-            filePath = resourceName;
+            this.filePath = filePath;
+
+            // Puedes calcular la duración si lo necesitas más adelante
+            songLength = "00:00"; // placeholder
+
         } catch (Exception e) {
             e.printStackTrace();
             songTitle = "Error";
