@@ -25,6 +25,9 @@ public class MusicPlayer extends PlaybackListener {
     //pause boolean flag used to indicate whether the layer has been paused
     private boolean isPaused;
 
+    //stores in the last frame when the playback is finished ( used for pausing and resuming)
+    private int currentFrame;
+
     //constructor
     public MusicPlayer() {
 
@@ -58,6 +61,7 @@ public class MusicPlayer extends PlaybackListener {
     }
 
     public void playCurrentSong() {
+        if(currentSong == null) return ;
         try {
             //read mp3 audio data
             FileInputStream fileInputStream = new FileInputStream(currentSong.getFilePath());
@@ -79,21 +83,33 @@ public class MusicPlayer extends PlaybackListener {
     private void startMusicThread() {
         new Thread(() -> {
             try {
-                advancedPlayer.play();
+                if (isPaused) {
+                    //resume music from last frame
+                    advancedPlayer.play(currentFrame, Integer.MAX_VALUE);
+                } else {
+                    advancedPlayer.play();
+                }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }).start();
 
     }
-    
+
     @Override
-    public void playbackStarted(PlaybackEvent evt){
+    public void playbackStarted(PlaybackEvent evt) {
         super.playbackStarted(evt);
     }
-    
+
     @Override
-    public void playbackFinished(PlaybackEvent evt){
+    public void playbackFinished(PlaybackEvent evt) {
         super.playbackFinished(evt);
+
+        System.out.println("Stopped @" + evt.getFrame());
+
+        if (isPaused) {
+            currentFrame += (int) ((double) evt.getFrame() * currentSong.getFrameRatePerMilliseconds());
+        }
     }
 }

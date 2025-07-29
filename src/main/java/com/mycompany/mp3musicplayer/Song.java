@@ -1,5 +1,6 @@
 package com.mycompany.mp3musicplayer;
 
+import com.mpatric.mp3agic.Mp3File;
 import java.io.File;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
@@ -16,9 +17,15 @@ public class Song {
     private String songArtist;
     private String songLength;
     private String filePath;
+    private Mp3File mp3File;
+    private double frameRatePerMilliseconds;
 
     public Song(String filePath) {
         try {
+
+            mp3File = new Mp3File(filePath);
+            frameRatePerMilliseconds = (double) mp3File.getFrameCount() / mp3File.getLengthInMilliseconds();
+
             File file = new File(filePath);
             if (!file.exists()) {
                 System.out.println("Archivo no encontrado: " + filePath);
@@ -76,4 +83,11 @@ public class Song {
         return filePath;
     }
 
+    public Mp3File getMp3File() {
+        return mp3File;
+    }
+
+    public double getFrameRatePerMilliseconds() {
+        return frameRatePerMilliseconds;
+    }
 }
