@@ -25,6 +25,7 @@ public class Song {
 
             mp3File = new Mp3File(filePath);
             frameRatePerMilliseconds = (double) mp3File.getFrameCount() / mp3File.getLengthInMilliseconds();
+            songLength = convertirToSongLengthFormat();
 
             File file = new File(filePath);
             if (!file.exists()) {
@@ -57,14 +58,17 @@ public class Song {
 
             this.filePath = filePath;
 
-            // Puedes calcular la duración si lo necesitas más adelante
-            songLength = "00:00"; // placeholder
-
         } catch (Exception e) {
             e.printStackTrace();
             songTitle = "Error";
             songArtist = "Error";
         }
+    }
+    private String convertirToSongLengthFormat() {
+        long minutes = mp3File.getLengthInSeconds() / 60;
+        long seconds = mp3File.getLengthInSeconds() % 60;
+        String formattedTime = String.format("%02d:%02d", minutes, seconds);
+        return formattedTime;
     }
 
     public String getSongTitle() {

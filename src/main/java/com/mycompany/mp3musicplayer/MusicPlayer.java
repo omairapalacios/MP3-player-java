@@ -16,7 +16,10 @@ import javazoom.jl.player.advanced.PlaybackListener;
  */
 public class MusicPlayer extends PlaybackListener {
 
-    //we will need a way to store our song's details, so we will be creating a song class
+    //need reference so that we can update the gui in this class
+    private MusicPlayerGUI musicPlayerGUI;
+
+    //need a way to store our song's details, so we will be creating a song class
     private Song currentSong;
 
     //use JLayer library to create and AdvancePlayer obj which will handle playing the music
@@ -28,9 +31,12 @@ public class MusicPlayer extends PlaybackListener {
     //stores in the last frame when the playback is finished ( used for pausing and resuming)
     private int currentFrame;
 
-    //constructor
-    public MusicPlayer() {
+    //track how many milliseconds has passed since playing the song ( used for updating the slider
+    private int currentTimeInMilli;
 
+    //constructor
+    public MusicPlayer(MusicPlayerGUI musicPlayerGUI) {
+        this.musicPlayerGUI = musicPlayerGUI;
     }
 
     public void loadSong(Song song) {
@@ -61,7 +67,9 @@ public class MusicPlayer extends PlaybackListener {
     }
 
     public void playCurrentSong() {
-        if(currentSong == null) return ;
+        if (currentSong == null) {
+            return;
+        }
         try {
             //read mp3 audio data
             FileInputStream fileInputStream = new FileInputStream(currentSong.getFilePath());
@@ -73,6 +81,9 @@ public class MusicPlayer extends PlaybackListener {
 
             //start music
             startMusicThread();
+            
+            //start playback slider
+            startPlaybackSliderThread();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -95,6 +106,26 @@ public class MusicPlayer extends PlaybackListener {
             }
         }).start();
 
+    }
+
+    private void startPlaybackSliderThread() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (!isPaused) {
+                    try {
+                        //increment current time milli
+                        currentTimeInMilli++;
+                        //calculate into frame value
+                        int calculatedFrame = (int) ((double) currentTimeInMilli * currentSong.getFrameRatePerMilliseconds());
+                        musicPlayerGUI.setPlaybackSliderValue(calculatedFrame);
+                        Thread.sleep(1);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 
     @Override
